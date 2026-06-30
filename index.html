@@ -1,0 +1,389 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>个人视频作品集</title>
+    <meta name="description" content="个人视频作品集，支持页面内直接点击播放观看。" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #10100f;
+        --panel: #191918;
+        --panel-strong: #232220;
+        --text: #f4f0e8;
+        --muted: #b9b0a3;
+        --line: rgba(244, 240, 232, 0.16);
+        --accent: #e8b85b;
+        --accent-2: #7ec7b4;
+        font-family:
+          "Microsoft YaHei",
+          "PingFang SC",
+          "Noto Sans SC",
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          linear-gradient(135deg, rgba(232, 184, 91, 0.14), transparent 34%),
+          linear-gradient(225deg, rgba(126, 199, 180, 0.12), transparent 36%),
+          var(--bg);
+        color: var(--text);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 18px clamp(18px, 4vw, 54px);
+        border-bottom: 1px solid var(--line);
+        background: rgba(16, 16, 15, 0.88);
+        backdrop-filter: blur(18px);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+      }
+
+      .brand-mark {
+        width: 28px;
+        height: 28px;
+        border: 2px solid var(--accent);
+        display: inline-grid;
+        place-items: center;
+      }
+
+      .brand-mark::after {
+        content: "";
+        width: 9px;
+        height: 9px;
+        background: var(--accent-2);
+      }
+
+      .header-link {
+        min-height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 14px;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+      }
+
+      .hero {
+        padding: clamp(54px, 9vw, 112px) clamp(18px, 4vw, 54px) clamp(30px, 6vw, 70px);
+      }
+
+      .hero-inner,
+      .section-inner {
+        max-width: 1240px;
+        margin: 0 auto;
+      }
+
+      .eyebrow,
+      .section-kicker {
+        margin: 0 0 14px;
+        color: var(--accent-2);
+        font-size: 13px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        font-weight: 800;
+      }
+
+      h1 {
+        max-width: 900px;
+        margin: 0;
+        font-size: clamp(42px, 8vw, 96px);
+        line-height: 0.98;
+        letter-spacing: 0;
+      }
+
+      .hero-copy {
+        max-width: 760px;
+        margin: 24px 0 0;
+        color: var(--muted);
+        font-size: clamp(16px, 2vw, 20px);
+        line-height: 1.75;
+      }
+
+      .section {
+        padding: 0 clamp(18px, 4vw, 54px) clamp(56px, 8vw, 96px);
+      }
+
+      .section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 24px;
+        margin-bottom: 22px;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: clamp(28px, 4vw, 48px);
+        line-height: 1.12;
+      }
+
+      .section-note {
+        max-width: 510px;
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .video-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .video-card {
+        background: linear-gradient(145deg, var(--panel), var(--panel-strong));
+        border: 1px solid var(--line);
+        overflow: hidden;
+      }
+
+      .video-shell {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background: #050505;
+      }
+
+      video {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        background: #050505;
+      }
+
+      .video-meta {
+        padding: 16px 18px 18px;
+      }
+
+      .video-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+
+      .number {
+        color: var(--accent);
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        font-size: 14px;
+      }
+
+      .backup-link {
+        color: var(--accent-2);
+        font-size: 13px;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(126, 199, 180, 0.45);
+      }
+
+      .video-card h3 {
+        margin: 0 0 8px;
+        font-size: 21px;
+        line-height: 1.25;
+      }
+
+      .video-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .notice {
+        margin-top: 20px;
+        padding: 16px 18px;
+        border: 1px solid rgba(232, 184, 91, 0.28);
+        background: rgba(232, 184, 91, 0.08);
+        color: #ffe3aa;
+        line-height: 1.7;
+      }
+
+      footer {
+        padding: 32px clamp(18px, 4vw, 54px);
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        text-align: center;
+        font-size: 14px;
+      }
+
+      @media (max-width: 900px) {
+        .section-heading {
+          display: block;
+        }
+
+        .section-note {
+          margin-top: 14px;
+        }
+
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .site-header {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .header-link {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="返回顶部">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>VIDEO DESIGNER</span>
+      </a>
+      <a class="header-link" href="#works">直接观看作品</a>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-inner">
+          <p class="eyebrow">Video Design / Motion Package / AIGC</p>
+          <h1>个人视频作品集</h1>
+          <p class="hero-copy">
+            页面内可直接点击播放观看，不需要跳转。视频较大，首次播放可能需要等待缓冲；建议甲方在 Wi-Fi 或稳定网络环境下查看。
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="works">
+        <div class="section-inner">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">Selected Works</p>
+              <h2>点击播放</h2>
+            </div>
+            <p class="section-note">
+              每个视频默认只加载基础信息，点击播放后才开始加载对应文件。右侧备用链接可在播放器加载失败时打开原分享页。
+            </p>
+          </div>
+
+          <div class="video-grid">
+            <article class="video-card">
+              <div class="video-shell"><video controls preload="metadata" playsinline poster="media/posters/01.jpg" src="media/previews/01.mp4"></video></div>
+              <div class="video-meta"><div class="video-top"><span class="number">01</span><a class="backup-link" href="https://feishu.doubao.com/drive/file/ARMVbinosoC0xDxXNUacuWxEnpf" target="_blank" rel="noopener noreferrer">备用链接</a></div><h3>Portfolio Opening Film</h3><p>首页影像、作品集主视觉、个人展示入口。</p></div>
+            </article>
+            <article class="video-card">
+              <div class="video-shell"><video controls preload="metadata" playsinline poster="media/posters/02.jpg" src="media/previews/02.mp4"></video></div>
+              <div class="video-meta"><div class="video-top"><span class="number">02</span><a class="backup-link" href="https://feishu.doubao.com/drive/file/Uyscbm7P5oz1yVxgClgcZDCInpc" target="_blank" rel="noopener noreferrer">备用链接</a></div><h3>Brand Image Film</h3><p>品牌影像、节奏设计与视觉呈现。</p></div>
+            </article>
+            <article class="video-card">
+              <div class="video-shell"><video controls preload="metadata" playsinline poster="media/posters/03.jpg" src="media/previews/03.mp4"></video></div>
+              <div class="video-meta"><div class="video-top"><span class="number">03</span><a class="backup-link" href="https://feishu.doubao.com/drive/file/Wo1nbOwrooiFz9xSEQvcNO7Hnae" target="_blank" rel="noopener noreferrer">备用链接</a></div><h3>Motion Identity</h3><p>动态视觉、包装系统与屏幕语言。</p></div>
+            </article>
+            <article class="video-card">
+              <div class="video-shell"><video controls preload="metadata" playsinline poster="media/posters/04.jpg" src="media/previews/04.mp4"></video></div>
+              <div class="video-meta"><div class="video-top"><span class="number">04</span><a class="backup-link" href="https://feishu.doubao.com/drive/file/Ljj2bcmIxociA2x4yV5cJFQbnrd" target="_blank" rel="noopener noreferrer">备用链接</a></div><h3>Spatial Visual</h3><p>空间影像、舞台视觉与沉浸内容。</p></div>
+            </article>
+            <article class="video-card">
+              <div class="video-shell"><video controls preload="metadata" playsinline poster="media/posters/05.jpg" src="media/previews/05.mp4"></video></div>
+              <div class="video-meta"><div class="video-top"><span class="number">05</span><a class="backup-link" href="https://feishu.doubao.com/drive/file/Jth7bKRswoIMkZxInzbcc1r6nKh" target="_blank" rel="noopener noreferrer">备用链接</a></div><h3>Visual Experiment</h3><p>概念短片、视觉实验与氛围构建。</p></div>
+            </article>
+            <article class="video-card">
+              <div class="video-shell"><video controls preload="metadata" playsinline poster="media/posters/06.jpg" src="media/previews/06.mp4"></video></div>
+              <div class="video-meta"><div class="video-top"><span class="number">06</span><a class="backup-link" href="https://feishu.doubao.com/drive/file/ULyebuYUFoGkbhxgmcTcZBdCnBe" target="_blank" rel="noopener noreferrer">备用链接</a></div><h3>Commercial Motion</h3><p>商业影像、动态表达与镜头设计。</p></div>
+            </article>
+            <article class="video-card">
+              <div class="video-shell"><video controls preload="metadata" playsinline poster="media/posters/8.jpg" src="media/previews/8.mp4"></video></div>
+              <div class="video-meta"><div class="video-top"><span class="number">08</span><a class="backup-link" href="https://feishu.doubao.com/drive/file/CcdfbABYhocMvVxc1WQclSjJnlh" target="_blank" rel="noopener noreferrer">备用链接</a></div><h3>Digital Scene</h3><p>数字场景、质感画面与视觉合成。</p></div>
+            </article>
+            <article class="video-card">
+              <div class="video-shell"><video controls preload="metadata" playsinline poster="media/posters/09.jpg" src="media/previews/09.mp4"></video></div>
+              <div class="video-meta"><div class="video-top"><span class="number">09</span><a class="backup-link" href="https://feishu.doubao.com/drive/file/YgwUbsxvLoplSgxF7cIcgAiGnrc" target="_blank" rel="noopener noreferrer">备用链接</a></div><h3>Launch Visual</h3><p>发布视觉、节奏控制与屏幕叙事。</p></div>
+            </article>
+            <article class="video-card">
+              <div class="video-shell"><video controls preload="metadata" playsinline poster="media/posters/10.jpg" src="media/previews/10.mp4"></video></div>
+              <div class="video-meta"><div class="video-top"><span class="number">10</span><a class="backup-link" href="https://feishu.doubao.com/drive/file/Il1cblmxDo1aUXxKyOBcyBmjnaf" target="_blank" rel="noopener noreferrer">备用链接</a></div><h3>Product Film</h3><p>产品影像、细节表达与高级质感。</p></div>
+            </article>
+            <article class="video-card">
+              <div class="video-shell"><video controls preload="metadata" playsinline poster="media/posters/11.jpg" src="media/previews/11.mp4"></video></div>
+              <div class="video-meta"><div class="video-top"><span class="number">11</span><a class="backup-link" href="https://feishu.doubao.com/drive/file/V7qcbESnuo2lcWxH5nDcoJOQnwh" target="_blank" rel="noopener noreferrer">备用链接</a></div><h3>Immersive Cut</h3><p>沉浸影像、大屏内容与空间节奏。</p></div>
+            </article>
+            <article class="video-card">
+              <div class="video-shell"><video controls preload="metadata" playsinline poster="media/posters/12.jpg" src="media/previews/12.mp4"></video></div>
+              <div class="video-meta"><div class="video-top"><span class="number">12</span><a class="backup-link" href="https://feishu.doubao.com/drive/file/ZYZfbDR4Io3ebcxlEPEcJMNMnff" target="_blank" rel="noopener noreferrer">备用链接</a></div><h3>Short Visual</h3><p>短片剪辑、画面控制与情绪推进。</p></div>
+            </article>
+            <article class="video-card">
+              <div class="video-shell"><video controls preload="metadata" playsinline poster="media/posters/13.jpg" src="media/previews/13.mp4"></video></div>
+              <div class="video-meta"><div class="video-top"><span class="number">13</span><a class="backup-link" href="https://feishu.doubao.com/drive/file/NQU7bt3mooVJuCxJ4Orc1AhsnBC" target="_blank" rel="noopener noreferrer">备用链接</a></div><h3>AI Visual Film</h3><p>AI 影像、概念生成与视觉导演。</p></div>
+            </article>
+            <article class="video-card">
+              <div class="video-shell"><video controls preload="metadata" playsinline poster="media/posters/15.jpg" src="media/previews/15.mp4"></video></div>
+              <div class="video-meta"><div class="video-top"><span class="number">15</span><span></span></div><h3>Graphic Motion</h3><p>图形动态、信息节奏与视觉包装。</p></div>
+            </article>
+            <article class="video-card">
+              <div class="video-shell"><video controls preload="metadata" playsinline poster="media/posters/16.jpg" src="media/previews/16.mp4"></video></div>
+              <div class="video-meta"><div class="video-top"><span class="number">16</span><span></span></div><h3>Screen Design</h3><p>屏幕设计、影像系统与动态主视觉。</p></div>
+            </article>
+            <article class="video-card">
+              <div class="video-shell"><video controls preload="metadata" playsinline poster="media/posters/纯AI制作.jpg" src="media/previews/纯AI制作.mp4"></video></div>
+              <div class="video-meta"><div class="video-top"><span class="number">AIGC 01</span><a class="backup-link" href="https://feishu.doubao.com/drive/file/DPccbifuPoEdEXx2VsKc0kl8nnh" target="_blank" rel="noopener noreferrer">备用链接</a></div><h3>纯 AI 制作</h3><p>AI 文案、角色设定、视频生成与音乐生成。</p></div>
+            </article>
+            <article class="video-card">
+              <div class="video-shell"><video controls preload="metadata" playsinline poster="media/posters/纯AI制作(1).jpg" src="media/previews/纯AI制作(1).mp4"></video></div>
+              <div class="video-meta"><div class="video-top"><span class="number">AIGC 02</span><a class="backup-link" href="https://feishu.doubao.com/drive/file/NGqobNHBuosOCtxH6cHcmtgWntf" target="_blank" rel="noopener noreferrer">备用链接</a></div><h3>纯 AI 制作（1）</h3><p>生成式影像流程与独立创作展示。</p></div>
+            </article>
+          </div>
+
+          <div class="notice">
+            当前页面使用优化后的网页预览版视频，加载更快；备用链接保留原始分享页。正式交付给甲方时，建议把优化后的视频放到视频云、对象存储或正式服务器。
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>Personal Video Portfolio · Inline Video Preview</footer>
+    <script>
+      const videos = Array.from(document.querySelectorAll("video"));
+      videos.forEach((video) => {
+        video.addEventListener("play", () => {
+          videos.forEach((other) => {
+            if (other !== video) other.pause();
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
+
