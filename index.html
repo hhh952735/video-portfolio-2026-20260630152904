@@ -224,6 +224,30 @@
         display: none;
       }
 
+      .video-shell.is-loading .play-button span {
+        background: rgba(126, 199, 180, 0.94);
+      }
+
+      .video-shell.is-loading .play-button span::after {
+        display: none;
+      }
+
+      .video-shell.is-loading .play-button span::before {
+        content: "";
+        position: absolute;
+        inset: 18px;
+        border-radius: 50%;
+        border: 3px solid rgba(21, 18, 13, 0.22);
+        border-top-color: #15120d;
+        animation: spin 900ms linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
       .video-meta {
         padding: 16px 18px 18px;
       }
@@ -451,18 +475,30 @@
     <script>
       const videos = Array.from(document.querySelectorAll("video"));
       let activeVideo = null;
+      const releaseTimers = new WeakMap();
+
+      function clearReleaseTimer(video) {
+        const timer = releaseTimers.get(video);
+        if (timer) window.clearTimeout(timer);
+        releaseTimers.delete(video);
+      }
 
       function unloadVideo(video) {
         const shell = video.closest(".video-shell");
+        clearReleaseTimer(video);
+        if (activeVideo === video) activeVideo = null;
         video.pause();
+        video.preload = "none";
         video.removeAttribute("src");
         video.load();
         shell.classList.remove("is-playing");
-        if (activeVideo === video) activeVideo = null;
+        shell.classList.remove("is-loading");
       }
 
       function loadVideo(video) {
+        clearReleaseTimer(video);
         if (!video.src) {
+          video.preload = "auto";
           video.src = video.dataset.src;
           video.load();
         }
@@ -472,12 +508,13 @@
         const shell = video.closest(".video-shell");
         if (activeVideo && activeVideo !== video) unloadVideo(activeVideo);
         activeVideo = video;
+        shell.classList.add("is-loading");
         loadVideo(video);
-        shell.classList.add("is-playing");
         const playRequest = video.play();
         if (playRequest) {
           playRequest.catch(() => {
             if (activeVideo === video) activeVideo = null;
+            shell.classList.remove("is-loading");
             shell.classList.remove("is-playing");
           });
         }
@@ -492,11 +529,31 @@
         });
 
         video.addEventListener("play", () => {
+          clearReleaseTimer(video);
+          shell.classList.remove("is-loading");
           shell.classList.add("is-playing");
+        });
+
+        video.addEventListener("waiting", () => {
+          if (activeVideo === video) shell.classList.add("is-loading");
+        });
+
+        video.addEventListener("canplay", () => {
+          shell.classList.remove("is-loading");
         });
 
         video.addEventListener("pause", () => {
           if (!video.ended) shell.classList.remove("is-playing");
+          if (activeVideo === video && !video.ended) {
+            clearReleaseTimer(video);
+            releaseTimers.set(video, window.setTimeout(() => unloadVideo(video), 12000));
+          }
+        });
+
+        video.addEventListener("error", () => {
+          if (activeVideo === video) activeVideo = null;
+          shell.classList.remove("is-loading");
+          shell.classList.remove("is-playing");
         });
 
         video.addEventListener("ended", () => {
