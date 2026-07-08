@@ -376,7 +376,7 @@
 
           <div class="video-grid">
             <article class="video-card">
-              <div class="video-shell"><video controls preload="none" playsinline poster="media/posters/纯AI制作.jpg" data-src="media/previews/纯AI制作.mp4"></video><button class="play-button" type="button" aria-label="播放视频"><span aria-hidden="true"></span></button></div>
+              <div class="video-shell"><video controls controlslist="nodownload noplaybackrate" disablepictureinpicture oncontextmenu="return false" preload="none" playsinline poster="media/posters/纯AI制作.jpg" data-src="media/previews/纯AI制作.mp4"></video><button class="play-button" type="button" aria-label="播放视频"><span aria-hidden="true"></span></button></div>
               <div class="video-meta"><div class="video-top"><span class="number">AIGC 01</span><a class="backup-link" href="https://feishu.doubao.com/drive/file/DPccbifuPoEdEXx2VsKc0kl8nnh" target="_blank" rel="noopener noreferrer">备用链接</a></div><h3>纯 AI 影像</h3><p>AI 脚本生成 / 角色设定 / 画面与音乐生成</p></div>
             </article>
             <article class="video-card">
@@ -400,16 +400,12 @@
 
           <div class="video-grid">
             <article class="video-card">
-              <div class="video-shell"><video controls preload="none" playsinline poster="media/posters/09.jpg" data-src="media/previews/09.mp4"></video><button class="play-button" type="button" aria-label="播放视频"><span aria-hidden="true"></span></button></div>
+              <div class="video-shell"><video controls controlslist="nodownload noplaybackrate" disablepictureinpicture oncontextmenu="return false" preload="none" playsinline poster="media/posters/09.jpg" data-src="media/previews/09.mp4"></video><button class="play-button" type="button" aria-label="播放视频"><span aria-hidden="true"></span></button></div>
               <div class="video-meta"><div class="video-top"><span class="number">09</span><a class="backup-link" href="https://feishu.doubao.com/drive/file/YgwUbsxvLoplSgxF7cIcgAiGnrc" target="_blank" rel="noopener noreferrer">备用链接</a></div><h3>整篇剪辑包装</h3><p>整篇剪辑包装 / 节奏控制 / 画面叙事</p></div>
             </article>
             <article class="video-card">
               <div class="video-shell"><video controls preload="none" playsinline poster="media/posters/01.jpg" data-src="media/previews/01.mp4"></video><button class="play-button" type="button" aria-label="播放视频"><span aria-hidden="true"></span></button></div>
               <div class="video-meta"><div class="video-top"><span class="number">01</span><a class="backup-link" href="https://feishu.doubao.com/drive/file/ARMVbinosoC0xDxXNUacuWxEnpf" target="_blank" rel="noopener noreferrer">备用链接</a></div><h3>Portfolio Opening Film</h3><p>作品集主视觉 / 开场影像 / 节奏剪辑包装</p></div>
-            </article>
-            <article class="video-card">
-              <div class="video-shell"><video controls preload="none" playsinline poster="media/posters/03.jpg" data-src="media/previews/03.mp4"></video><button class="play-button" type="button" aria-label="播放视频"><span aria-hidden="true"></span></button></div>
-              <div class="video-meta"><div class="video-top"><span class="number">03</span><a class="backup-link" href="https://feishu.doubao.com/drive/file/Wo1nbOwrooiFz9xSEQvcNO7Hnae" target="_blank" rel="noopener noreferrer">备用链接</a></div><h3>Motion Identity</h3><p>动态包装 / 图形视觉 / 信息呈现设计</p></div>
             </article>
             <article class="video-card">
               <div class="video-shell"><video controls preload="none" playsinline poster="media/posters/04.jpg" data-src="media/previews/04.mp4"></video><button class="play-button" type="button" aria-label="播放视频"><span aria-hidden="true"></span></button></div>
@@ -462,6 +458,7 @@
         video.removeAttribute("src");
         video.load();
         shell.classList.remove("is-playing");
+        if (activeVideo === video) activeVideo = null;
       }
 
       function loadVideo(video) {
@@ -503,10 +500,22 @@
         });
 
         video.addEventListener("ended", () => {
-          if (activeVideo === video) activeVideo = null;
           unloadVideo(video);
         });
       });
+
+      const visibilityObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.target === activeVideo && entry.intersectionRatio < 0.15) {
+              unloadVideo(entry.target);
+            }
+          });
+        },
+        { threshold: [0, 0.15, 0.5] }
+      );
+
+      videos.forEach((video) => visibilityObserver.observe(video));
     </script>
   </body>
 </html>
