@@ -505,6 +505,12 @@
         shell.classList.remove("is-loading");
       }
 
+      function unloadOtherVideos(currentVideo) {
+        videos.forEach((video) => {
+          if (video !== currentVideo && (video.src || !video.paused)) unloadVideo(video);
+        });
+      }
+
       function loadVideo(video) {
         clearReleaseTimer(video);
         if (!video.src) {
@@ -516,7 +522,7 @@
 
       function playOnly(video) {
         const shell = video.closest(".video-shell");
-        if (activeVideo && activeVideo !== video) unloadVideo(activeVideo);
+        unloadOtherVideos(video);
         activeVideo = video;
         shell.classList.add("is-loading");
         loadVideo(video);
@@ -534,11 +540,17 @@
         const shell = video.closest(".video-shell");
         const button = shell.querySelector(".play-button");
 
+        button.addEventListener("pointerdown", () => {
+          loadVideo(video);
+        });
+
         button.addEventListener("click", () => {
           playOnly(video);
         });
 
         video.addEventListener("play", () => {
+          unloadOtherVideos(video);
+          activeVideo = video;
           clearReleaseTimer(video);
           shell.classList.remove("is-loading");
           shell.classList.add("is-playing");
