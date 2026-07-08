@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>个人视频作品集</title>
     <meta name="description" content="个人视频作品集，支持页面内直接点击播放观看。" />
+    <script>
+      (() => {
+        const allowedVersion = "2dae91c";
+        const currentVersion = new URLSearchParams(window.location.search).get("v");
+        window.__portfolioAccessAllowed = currentVersion === allowedVersion;
+        if (!window.__portfolioAccessAllowed) {
+          document.documentElement.classList.add("is-expired-link");
+        }
+      })();
+    </script>
     <style>
       :root {
         color-scheme: dark;
@@ -43,6 +53,41 @@
           linear-gradient(225deg, rgba(126, 199, 180, 0.12), transparent 36%),
           var(--bg);
         color: var(--text);
+      }
+
+      html.is-expired-link .site-header,
+      html.is-expired-link main,
+      html.is-expired-link footer {
+        display: none;
+      }
+
+      .expired-link {
+        display: none;
+      }
+
+      html.is-expired-link .expired-link {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 28px;
+        text-align: center;
+      }
+
+      .expired-link-inner {
+        max-width: 520px;
+      }
+
+      .expired-link h1 {
+        margin: 0 0 12px;
+        font-size: clamp(30px, 5vw, 52px);
+        line-height: 1.1;
+      }
+
+      .expired-link p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.8;
       }
 
       a {
@@ -337,6 +382,12 @@
     </style>
   </head>
   <body>
+    <div class="expired-link">
+      <div class="expired-link-inner">
+        <h1>链接已失效</h1>
+        <p>请使用最新的作品集链接观看。</p>
+      </div>
+    </div>
     <header class="site-header">
       <a class="brand" href="#top" aria-label="返回顶部">
         <span class="brand-mark" aria-hidden="true"></span>
@@ -483,6 +534,7 @@
 
     <footer>Personal Video Portfolio · Inline Video Preview</footer>
     <script>
+      if (window.__portfolioAccessAllowed) {
       const videos = Array.from(document.querySelectorAll("video"));
       let activeVideo = null;
       const releaseTimers = new WeakMap();
@@ -595,6 +647,7 @@
       );
 
       videos.forEach((video) => visibilityObserver.observe(video));
+      }
     </script>
   </body>
 </html>
